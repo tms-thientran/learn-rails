@@ -1,0 +1,10 @@
+= turbo_frame_tag "modal" do
+  = render 'shared/modal',
+    modal_id: 'edit_project_modal',
+    title: 'Sửa Project',
+    size: 'md',
+    show_footer: false,
+    close_path: projects_path,
+    turbo_frame: 'modal',
+    close_frame: '_top' do
+    = render 'form', locals: { project: @project, text_submit: 'Cập nhật dự án' }

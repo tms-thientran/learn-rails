@@ -1,0 +1,15 @@
+/ app/views/shared/_pagination.html.slim
+- return unless collection.respond_to?(:total_pages) && collection.total_pages > 1
+
+nav.flex.items-center.justify-center.mt-6.gap-2 aria-label="Pagination"
+  - unless collection.first_page?
+    = link_to url_for(page: collection.prev_page), class: "px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:text-gray-900 hover:bg-gray-50" do
+      | Trước
+
+  - (1..collection.total_pages).each do |page|
+    - active = page == collection.current_page
+    = link_to page, url_for(page: page), class: "px-3 py-1 text-sm font-semibold rounded-lg #{active ? 'bg-indigo-600 text-white' : 'text-gray-600 bg-white border border-gray-200 hover:bg-gray-50'}"
+
+  - unless collection.last_page?
+    = link_to url_for(page: collection.next_page), class: "px-3 py-1 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:text-gray-900 hover:bg-gray-50" do
+      | Sau
