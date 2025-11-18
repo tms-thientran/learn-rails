@@ -1,0 +1,27 @@
+= form_with model: @project, class: "space-y-4", data: { turbo_frame: "_top" } do |form|
+    / Project Name
+    div
+      = form.label :name, "Tên project", class: "label-field"
+      = form.text_field :name,
+        class: "input-field",
+        placeholder: "Nhập tên project",
+        required: true
+      - if form.object.errors[:name].any?
+        .error-message
+          = form.object.errors[:name].first
+
+    / Color Selection (sẽ implement sau)
+    div
+      = form.label :color_id, "Màu sắc", class: "label-field"
+      = form.select :color_id,
+        options_from_collection_for_select(Color.all, :id, :name),
+        { prompt: "Chọn màu" },
+        { class: "input-field", required: true }
+      - if form.object.errors[:color_id].any?
+        .error-message
+          = form.object.errors[:color_id].first
+
+    / Submit button trong form
+    .flex.justify-end.gap-3.pt-4
+      = link_to 'Hủy', projects_path, data: { turbo_frame: '_top' }, class: "flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+      = form.submit local_assigns[:text_submit], class: "btn-primary px-4 py-2 text-sm"

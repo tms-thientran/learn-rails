@@ -1,0 +1,6 @@
+header.bg-white.border-b.border-gray-200.shadow-sm
+  .flex.items-center.h-16.px-6
+    / Page Title
+    h1.text-xl.font-semibold.text-gray-900
+      = content_for?(:page_title) ? yield(:page_title) : "Home 🏡"
+

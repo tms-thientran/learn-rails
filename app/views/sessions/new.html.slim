@@ -1,0 +1,50 @@
+- content_for :main_class, "flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gradient-auth"
+
+.max-w-md.w-full.space-y-8
+  / Header
+  .text-center
+    .inline-flex.items-center.justify-center.w-16.h-16.rounded-full.bg-gradient-to-br.from-indigo-500.to-purple-600.mb-4.shadow-lg
+      svg.w-8.h-8.text-white fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+    h1.text-3xl.font-bold.text-gray-900.mb-2.tracking-tight Đăng nhập
+    p.text-gray-600.text-sm Đăng nhập để truy cập vào hệ thống
+
+  / Form
+  = form_with model: @user, url: session_path, class: "form-container", data: { turbo: false } do |form|
+    .space-y-5
+      / Email Field
+      div
+        = form.label :email, class: "label-field" do
+          | Email
+        = form.text_field :email,
+          class: "input-field #{'input-field-error' if form.object.errors[:email].any?}",
+          placeholder: "your@email.com",
+          required: true
+        - if form.object.errors[:email].any?
+          p.error-message = form.object.errors[:email].first
+
+      / Password Field
+      div
+        = form.label :password, class: "label-field" do
+          | Mật khẩu
+        = form.password_field :password,
+          class: "input-field #{'input-field-error' if form.object.errors[:password].any?}",
+          placeholder: "••••••••",
+          required: true,
+          autocomplete: "new-password"
+        - if form.object.errors[:password].any?
+          p.error-message = form.object.errors[:password].first
+
+    / Submit Button
+    div
+      button.btn-primary.group type="submit"
+        span.absolute.left-0.inset-y-0.flex.items-center.justify-center.pl-3
+          svg.h-5.w-5.text-indigo-300.group-hover:text-indigo-200.transition-colors fill="currentColor" viewBox="0 0 20 20"
+            path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"
+        | Đăng nhập
+
+    / Login Link
+    .text-center.pt-2
+      p.text-sm.text-gray-600
+        | Chưa có tài khoản?
+        = link_to "Đăng ký", sign_up_path, class: 'font-semibold text-indigo-600 hover:text-indigo-70 transition-colors'
