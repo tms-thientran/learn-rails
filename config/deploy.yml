@@ -7,10 +7,10 @@ image: tms-thientran/learn-rails  # Thay tms-thientran
 # Deploy to these servers.
 servers:
   web:
-    - 18.143.134.4  # Thay bằng IP server của bạn
+    - 54.169.73.2  # Thay bằng IP server của bạn
   job:
     hosts:
-      - 18.143.134.4  # Sidekiq worker
+      - 54.169.73.2  # Sidekiq worker
     cmd: bundle exec sidekiq
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -48,9 +48,10 @@ env:
     # Redis configuration
     REDIS_URL: redis://note_forge-redis:6379/1
     
-    # Web server configuration
-    WEB_CONCURRENCY: 2
-    RAILS_MAX_THREADS: 5
+    # Web server configuration (optimized for 1GB RAM)
+    WEB_CONCURRENCY: 1
+    RAILS_MAX_THREADS: 3
+    MALLOC_ARENA_MAX: 2
     
     # Rails environment
     RAILS_LOG_LEVEL: info
@@ -80,10 +81,10 @@ builder:
   arch: amd64
   # Build locally instead of on the server
   local: true
-  # Disable cache temporarily to ensure clean build
-  # cache:
-  #   type: registry
-  #   options: mode=max
+  # Enable cache để build nhanh hơn
+  cache:
+    type: registry
+    options: mode=max
 
 # Use a different ssh user than root
 # Uncomment nếu server dùng user khác root (vd: ubuntu, admin, ec2-user)
@@ -97,8 +98,10 @@ ssh:
 accessories:
   db:
     image: mysql:8.0
-    host: 18.143.134.4  # Thay bằng IP server của bạn
+    host: 54.169.73.2  # Thay bằng IP server của bạn
     port: "127.0.0.1:3306:3306"
+    options:
+      network: "kamal"  # Join kamal network để app có thể kết nối
     env:
       clear:
         MYSQL_ROOT_HOST: '%'
@@ -109,7 +112,9 @@ accessories:
       - data:/var/lib/mysql
   redis:
     image: redis:7-alpine
-    host: 18.143.134.4  # Thay bằng IP server của bạn
+    host: 54.169.73.2  # Thay bằng IP server của bạn
     port: "127.0.0.1:6379:6379"
+    options:
+      network: "kamal"  # Join kamal network để app có thể kết nối
     directories:
       - data:/data

@@ -68,6 +68,10 @@ COPY --chown=rails:rails --from=build /rails /rails
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
+# Configure healthcheck với timeout cao hơn
+HEALTHCHECK --interval=10s --timeout=10s --start-period=60s --retries=15 \
+  CMD curl -f http://localhost:80/up || exit 1
+
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
 CMD ["./bin/thrust", "./bin/rails", "server"]
