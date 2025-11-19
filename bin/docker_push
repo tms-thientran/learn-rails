@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# Script to tag and push Docker image to registry
+set -e
+
+echo "🐳 Pushing Docker image to registry..."
+echo "======================================="
+
+# Check if image exists
+if ! docker images note_forge:latest | grep -q note_forge; then
+  echo "❌ Error: note_forge:latest image not found!"
+  echo "Build it first: ./bin/docker_build"
+  exit 1
+fi
+
+# Ask for registry choice
+echo ""
+echo "Select registry:"
+echo "  1) Docker Hub (docker.io)"
+echo "  2) GitHub Container Registry (ghcr.io)"
+echo "  3) Custom registry"
+read -p "Choice (1-3): " choice
+
+case $choice in
+  1)
+    REGISTRY="docker.io"
+    read -p "Docker Hub username: " USERNAME
+    IMAGE="${USERNAME}/note_forge"
+    
+    echo ""
+    echo "Logging in to Docker Hub..."
+    docker login
+    ;;
+    
+  2)
+    REGISTRY="ghcr.io"
+    read -p "GitHub username: " USERNAME
+    read -sp "GitHub Personal Access Token: " TOKEN
+    echo ""
+    IMAGE="ghcr.io/${USERNAME}/note_forge"
+    
+    echo ""
+    echo "Logging in to GitHub Container Registry..."
+    echo "$TOKEN" | docker login ghcr.io -u "$USERNAME" --password-stdin
+    ;;
+    
+  3)
+    read -p "Registry URL (e.g., registry.example.com): " REGISTRY
+    read -p "Username: " USERNAME
+    read -sp "Password: " PASSWORD
+    echo ""
+    IMAGE="${REGISTRY}/${USERNAME}/note_forge"
+    
+    echo ""
+    echo "Logging in to ${REGISTRY}..."
+    echo "$PASSWORD" | docker login "$REGISTRY" -u "$USERNAME" --password-stdin
+    ;;
+    
+  *)
+    echo "Invalid choice!"
+    exit 1
+    ;;
+esac
+
+# Tag image
+echo ""
+echo "📦 Tagging image..."
+docker tag note_forge:latest "${IMAGE}:latest"
+
+# Optionally tag with version
+read -p "Tag with version? (e.g., v1.0.0, leave empty to skip): " VERSION
+if [ ! -z "$VERSION" ]; then
+  docker tag note_forge:latest "${IMAGE}:${VERSION}"
+  echo "Tagged: ${IMAGE}:${VERSION}"
+fi
+
+# Push image
+echo ""
+echo "⬆️  Pushing image..."
+docker push "${IMAGE}:latest"
+
+if [ ! -z "$VERSION" ]; then
+  docker push "${IMAGE}:${VERSION}"
+fi
+
+# Success
+echo ""
+echo "✅ Image pushed successfully!"
+echo ""
+echo "Image: ${IMAGE}:latest"
+if [ ! -z "$VERSION" ]; then
+  echo "Image: ${IMAGE}:${VERSION}"
+fi
+echo ""
+echo "🎯 Update config/deploy.yml with this image name:"
+echo "   image: ${IMAGE}"
+echo ""
+

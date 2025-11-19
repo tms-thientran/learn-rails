@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Script to test Docker setup locally with docker-compose
+set -e
+
+echo "🐳 Testing Docker setup locally..."
+echo "===================================="
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ Error: Docker is not running!"
+  echo "Please start Docker Desktop and try again."
+  exit 1
+fi
+
+# Check if RAILS_MASTER_KEY exists
+if [ ! -f "config/master.key" ]; then
+  echo "❌ Error: config/master.key not found!"
+  echo "Run: bin/rails credentials:edit"
+  exit 1
+fi
+
+# Export Rails master key
+export RAILS_MASTER_KEY=$(cat config/master.key)
+
+echo ""
+echo "📦 Building and starting containers..."
+echo "This may take several minutes on first run..."
+echo ""
+
+# Build and start containers
+docker-compose up --build -d
+
+echo ""
+echo "⏳ Waiting for services to be ready..."
+sleep 10
+
+# Show container status
+echo ""
+echo "📊 Container status:"
+docker-compose ps
+
+# Show logs
+echo ""
+echo "📝 Recent logs:"
+docker-compose logs --tail=20
+
+echo ""
+echo "✅ Docker setup is running!"
+echo ""
+echo "🌐 Access your app at: http://localhost:3000"
+echo ""
+echo "📋 Useful commands:"
+echo "   docker-compose logs -f          # Follow all logs"
+echo "   docker-compose logs -f web      # Follow web logs"
+echo "   docker-compose logs -f sidekiq  # Follow sidekiq logs"
+echo "   docker-compose exec web bash    # Shell into web container"
+echo "   docker-compose exec web bin/rails console  # Rails console"
+echo "   docker-compose down             # Stop containers"
+echo "   docker-compose down -v          # Stop and remove volumes"
+echo ""
+

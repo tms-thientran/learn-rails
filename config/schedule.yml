@@ -1,0 +1,28 @@
+# Sidekiq Cron Schedule Configuration
+# Cron syntax: minute hour day month day_of_week
+# Examples:
+# */5 * * * * - Every 5 minutes
+# 0 * * * * - Every hour
+# 0 0 * * * - Every day at midnight
+# 0 12 * * * - Every day at noon
+
+periodic_check_job:
+  cron: "*/5 * * * *"  # Chạy mỗi 5 phút
+  class: "PeriodicCheckJob"
+  queue: default
+  description: "Job chạy định kỳ mỗi 5 phút để kiểm tra tasks"
+
+# Ví dụ thêm các scheduled jobs khác:
+
+# daily_report_job:
+#   cron: "0 9 * * *"  # Chạy mỗi ngày lúc 9:00 AM
+#   class: "DailyReportJob"
+#   queue: default
+#   description: "Gửi báo cáo hàng ngày"
+
+# hourly_cleanup_job:
+#   cron: "0 * * * *"  # Chạy mỗi giờ
+#   class: "HourlyCleanupJob"
+#   queue: default
+#   description: "Dọn dẹp dữ liệu cũ mỗi giờ"
+

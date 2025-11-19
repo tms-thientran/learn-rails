@@ -1,0 +1,5 @@
+= turbo_stream.replace @task do
+  = render @task
+
+- if @is_form_update
+  = turbo_stream.update "modal_task", ""

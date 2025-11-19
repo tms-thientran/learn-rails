@@ -1,4 +1,8 @@
+require "sidekiq/web"
+require "sidekiq/cron/web"
+
 Rails.application.routes.draw do
+  mount Sidekiq::Web => "/sidekiq" # access it at http://localhost:3000/sidekiq
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -12,7 +16,7 @@ Rails.application.routes.draw do
   resource :sign_up, only: %i[ show create ]
   resource :session
   resources :projects do
-    resources :todos
+    resources :tasks
   end
 
   root "projects#index"

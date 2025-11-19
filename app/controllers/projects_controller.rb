@@ -2,9 +2,10 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: %i[edit update destroy]
 
   def index
+    @q = Project.ransack(params[:q])
+
     @project_count = Project.count
-    @projects = Project.includes(:color).select(:id, :name, :color_id)
-      .order(id: :desc).page(params[:page]).per(10)
+    @projects = @q.result(distinct: true).includes(:color).where(user: Current.user).order(id: :desc).page(params[:page]).per(10)
   end
 
   def new

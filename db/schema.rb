@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_18_031556) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_19_013342) do
   create_table "colors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "hex_code", null: false
@@ -39,6 +39,23 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_031556) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "tasks", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "deadline_time"
+    t.string "name", null: false
+    t.bigint "parent_id"
+    t.integer "priority", default: 0
+    t.bigint "project_id", null: false
+    t.datetime "start_time"
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -52,4 +69,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_031556) do
   add_foreign_key "projects", "colors"
   add_foreign_key "projects", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "tasks", "projects"
+  add_foreign_key "tasks", "users"
 end

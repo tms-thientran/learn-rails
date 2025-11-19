@@ -1,0 +1,12 @@
+div class="w-full space-y-8"
+  h1 class="text-[30px] font-bold mb-2"
+    | Tasks
+  div.flex.justify-end
+    = link_to 'Thêm mới', new_project_task_path, class: 'btn-primary max-w-[130px] text-center inline-flex items-center justify-center', data: { turbo_frame: 'modal_task' }
+  - if flash[:notice]
+    div#flash.badge-success data-controller="project"
+     = flash[:notice]
+.flex.flex-col.space-y-3.mt-3
+  = render @tasks
+= render 'shared/pagination', collection: @tasks
+= turbo_frame_tag 'modal_task'

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Script to build Docker image for Rails 8 app
+set -e
+
+echo "🐳 Building Docker image for note_forge..."
+echo "=========================================="
+
+# Check if RAILS_MASTER_KEY exists
+if [ ! -f "config/master.key" ]; then
+  echo "❌ Error: config/master.key not found!"
+  echo "Run: bin/rails credentials:edit"
+  exit 1
+fi
+
+# Get Rails master key
+export RAILS_MASTER_KEY=$(cat config/master.key)
+
+# Build the image
+echo ""
+echo "📦 Building image..."
+docker build -t note_forge:latest .
+
+# Check if build succeeded
+if [ $? -eq 0 ]; then
+  echo ""
+  echo "✅ Build successful!"
+  echo ""
+  echo "Image size:"
+  docker images note_forge:latest
+  echo ""
+  echo "🚀 To run the image:"
+  echo "   docker run -p 3000:80 -e RAILS_MASTER_KEY=\$(cat config/master.key) note_forge:latest"
+  echo ""
+  echo "Or use docker-compose:"
+  echo "   RAILS_MASTER_KEY=\$(cat config/master.key) docker-compose up"
+else
+  echo ""
+  echo "❌ Build failed!"
+  exit 1
+fi
+

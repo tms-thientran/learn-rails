@@ -14,11 +14,12 @@ default: &default
   encoding: utf8mb4
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: <%= ENV.fetch("DB_USERNAME", 'root') %>
-  password: <%= Rails.application.credentials.dig(:db, :password) %>
+  password: <%= ENV.fetch("DB_PASSWORD", '') %>
   socket: /tmp/mysql.sock
 
 development:
   <<: *default
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
   database: note_forge_development
 
 # Warning: The database defined as "test" will be erased and
@@ -55,20 +56,8 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: note_forge_production
-    username: note_forge
-    password: <%= ENV["NOTE_FORGE_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: note_forge_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: note_forge_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: note_forge_production_cable
-    migrations_paths: db/cable_migrate
+  <<: *default
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
+  database: <%= ENV.fetch("DB_NAME", "note_forge_production") %>
+  username: <%= ENV.fetch("DB_USERNAME", "root") %>
+  password: <%= ENV["DB_PASSWORD"] %>

@@ -1,0 +1,26 @@
+= form_with model: [@project, @task], class: "space-y-4", data: { turbo_frame: "_top" } do |form|
+    / Project Name
+    div
+      = form.label :name, "Tên task", class: "label-field"
+      = form.text_field :name,
+        class: "input-field",
+        placeholder: "Nhập tên task",
+        required: true
+      - if form.object.errors[:name].any?
+        .error-message
+          = form.object.errors[:name].first
+    div
+      = form.label :content, "Nội dung", class: "label-field"
+      = form.text_area :content,
+        rows: 5,
+        class: "input-field",
+        placeholder: "Nhập nội dung task",
+        required: true
+      - if form.object.errors[:content].any?
+        .error-message
+          = form.object.errors[:content].first
+
+    / Submit button trong form
+    .flex.justify-end.gap-3.pt-4
+      = link_to 'Hủy', projects_path, data: { turbo_frame: '_top' }, class: "flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+      = form.submit local_assigns[:text_submit], class: "btn-primary px-4 py-2 text-sm"

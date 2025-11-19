@@ -1,0 +1,10 @@
+= turbo_frame_tag "modal_task" do
+  = render 'shared/modal',
+    modal_id: 'new_task_modal',
+    title: 'Thêm mới task',
+    size: 'md',
+    show_footer: false,
+    close_path: project_tasks_path,
+    turbo_frame: 'modal_task',
+    close_frame: '_top' do
+    = render 'form', locals: { project: @project, task: @task, text_submit: 'Tạo task' }

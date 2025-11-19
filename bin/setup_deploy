@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+# Quick setup script for Kamal deployment
+
+def check_command(command)
+  system("which #{command} > /dev/null 2>&1")
+end
+
+puts "🚀 Kamal Deployment Setup"
+puts "=" * 50
+
+# Check requirements
+puts "\n1️⃣ Checking requirements..."
+missing = []
+missing << "docker" unless check_command("docker")
+missing << "kamal" unless check_command("kamal")
+
+if missing.any?
+  puts "❌ Missing: #{missing.join(', ')}"
+  puts "\nInstall kamal: gem install kamal"
+  exit 1
+else
+  puts "✅ All requirements met"
+end
+
+# Check for config/master.key
+unless File.exist?("config/master.key")
+  puts "\n❌ config/master.key not found!"
+  puts "Run: bin/rails credentials:edit"
+  exit 1
+end
+
+# Create .kamal directory
+puts "\n2️⃣ Setting up .kamal directory..."
+FileUtils.mkdir_p(".kamal")
+puts "✅ Created .kamal/"
+
+# Copy secrets example if not exists
+if File.exist?(".kamal/secrets")
+  puts "⚠️  .kamal/secrets already exists"
+else
+  if File.exist?(".kamal/secrets.example")
+    FileUtils.cp(".kamal/secrets.example", ".kamal/secrets")
+    puts "✅ Created .kamal/secrets from template"
+  end
+end
+
+puts "\n3️⃣ Things you need to do manually:"
+puts ""
+puts "📝 Edit config/deploy.yml:"
+puts "   - Replace YOUR_SERVER_IP with your server IP (3 places)"
+puts "   - Replace YOUR_GITHUB_USERNAME (2 places)"
+puts ""
+puts "📝 Edit .kamal/secrets:"
+puts "   - Add your GitHub Personal Access Token"
+puts "   - Add your MySQL password"
+puts ""
+puts "🔑 Create GitHub Personal Access Token:"
+puts "   1. Go to: https://github.com/settings/tokens"
+puts "   2. Generate new token (classic)"
+puts "   3. Select scopes: write:packages, read:packages"
+puts ""
+
+puts "\n4️⃣ After completing the above, run:"
+puts ""
+puts "   # Check config"
+puts "   kamal config"
+puts ""
+puts "   # Deploy!"
+puts "   kamal setup"
+puts ""
+
+puts "📖 For detailed instructions, see: DEPLOY.md"
+puts "=" * 50
+

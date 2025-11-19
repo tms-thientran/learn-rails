@@ -1,6 +1,3 @@
-# syntax=docker/dockerfile:1
-# check=error=true
-
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t note_forge .
 # docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name note_forge note_forge
@@ -36,7 +33,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
-COPY Gemfile Gemfile.lock vendor ./
+COPY Gemfile Gemfile.lock ./
 
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \

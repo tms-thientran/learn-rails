@@ -2,16 +2,16 @@
 service: note_forge
 
 # Name of the container image (use your-user/app-name on external registries).
-image: note_forge
+image: tms-thientran/learn-rails  # Thay tms-thientran
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
-  # job:
-  #   hosts:
-  #     - 192.168.0.1
-  #   cmd: bin/jobs
+    - 18.143.134.4  # Thay bằng IP server của bạn
+  job:
+    hosts:
+      - 18.143.134.4  # Sidekiq worker
+    cmd: bundle exec sidekiq
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
@@ -27,36 +27,34 @@ servers:
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
+  server: ghcr.io  # GitHub Container Registry (hoặc dùng hub.docker.com)
+  username: tms-thientran  # Thay bằng username GitHub của bạn
 
   # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  password:
+    - KAMAL_REGISTRY_PASSWORD  # GitHub Personal Access Token
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - DB_PASSWORD
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
-    SOLID_QUEUE_IN_PUMA: true
-
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
-
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use note_forge-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
-
-    # Log everything from Rails
-    # RAILS_LOG_LEVEL: debug
+    # Database configuration
+    DB_HOST: note_forge-db
+    DB_USERNAME: root
+    DB_NAME: note_forge_production
+    
+    # Redis configuration
+    REDIS_URL: redis://note_forge-redis:6379/1
+    
+    # Web server configuration
+    WEB_CONCURRENCY: 2
+    RAILS_MAX_THREADS: 5
+    
+    # Rails environment
+    RAILS_LOG_LEVEL: info
+    RAILS_SERVE_STATIC_FILES: true
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
@@ -80,41 +78,38 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
-
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: ruby-3.4.7
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
+  # Build locally instead of on the server
+  local: true
+  # Disable cache temporarily to ensure clean build
+  # cache:
+  #   type: registry
+  #   options: mode=max
 
 # Use a different ssh user than root
-# ssh:
-#   user: app
+# Uncomment nếu server dùng user khác root (vd: ubuntu, admin, ec2-user)
+ssh:
+  user: ubuntu
+  keys:
+    - ~/.ssh/nnoc-nail.pem  # Thay bằng path đến AWS .pem key của bạn
+  keys_only: true
 
 # Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+accessories:
+  db:
+    image: mysql:8.0
+    host: 18.143.134.4  # Thay bằng IP server của bạn
+    port: "127.0.0.1:3306:3306"
+    env:
+      clear:
+        MYSQL_ROOT_HOST: '%'
+        MYSQL_DATABASE: note_forge_production
+      secret:
+        - MYSQL_ROOT_PASSWORD
+    directories:
+      - data:/var/lib/mysql
+  redis:
+    image: redis:7-alpine
+    host: 18.143.134.4  # Thay bằng IP server của bạn
+    port: "127.0.0.1:6379:6379"
+    directories:
+      - data:/data

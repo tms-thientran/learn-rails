@@ -49,3 +49,15 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+/docker-compose*.yml
+
+# Ignore documentation
+/DEPLOY*.md
+/README.md
+
+# Ignore test files
+/spec
+/test
+
+# Ignore dump files
+dump.rdb
