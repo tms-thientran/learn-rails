@@ -15,4 +15,3 @@ raise "Seed users and projects first" if user_ids.empty? || project_ids.empty?
     s.deadline_time = FFaker::Time.datetime
   end
 end
-
