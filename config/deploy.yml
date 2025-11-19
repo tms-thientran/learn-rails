@@ -13,11 +13,6 @@ servers:
       - 54.169.73.2  # Sidekiq worker
     cmd: bundle exec sidekiq
 
-# Configure boot timeouts để tránh container not ready
-boot:
-  limit: 10  # Boot 10 containers cùng lúc
-  wait: 120  # Chờ tối đa 120 giây thay vì 30s mặc định
-
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 #
