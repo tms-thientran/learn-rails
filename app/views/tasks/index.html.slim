@@ -7,6 +7,6 @@ div class="w-full space-y-8"
     div#flash.badge-success data-controller="project"
      = flash[:notice]
 .flex.flex-col.space-y-3.mt-3
-  = render @tasks
+  = render partial: 'tasks/task', collection: @tasks
 = render 'shared/pagination', collection: @tasks
 = turbo_frame_tag 'modal_task'
