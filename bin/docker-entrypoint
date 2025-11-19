@@ -2,7 +2,13 @@
 
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+  # Chỉ chạy nếu SKIP_DB_PREPARE không được set
+  if [ -z "$SKIP_DB_PREPARE" ]; then
+    echo "Running db:prepare..."
+    ./bin/rails db:prepare
+  else
+    echo "Skipping db:prepare (SKIP_DB_PREPARE is set)"
+  fi
 fi
 
 exec "${@}"

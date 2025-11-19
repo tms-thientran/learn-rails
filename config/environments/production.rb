@@ -8,6 +8,9 @@ Rails.application.configure do
 
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
+  
+  # Tăng timeout cho bootsnap cache
+  config.bootsnap_cache_dir = "tmp/cache/bootsnap"
 
   # Full error reports are disabled.
   config.consider_all_requests_local = false

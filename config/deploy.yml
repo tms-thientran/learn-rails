@@ -13,6 +13,11 @@ servers:
       - 54.169.73.2  # Sidekiq worker
     cmd: bundle exec sidekiq
 
+# Configure boot timeouts để tránh container not ready
+boot:
+  limit: 10  # Boot 10 containers cùng lúc
+  wait: 120  # Chờ tối đa 120 giây thay vì 30s mặc định
+
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 #
@@ -56,6 +61,9 @@ env:
     # Rails environment
     RAILS_LOG_LEVEL: info
     RAILS_SERVE_STATIC_FILES: true
+    
+    # Deploy optimization (uncomment để skip db:prepare)
+    # SKIP_DB_PREPARE: "1"
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
