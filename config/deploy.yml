@@ -7,10 +7,10 @@ image: tms-thientran/learn-rails  # Thay tms-thientran
 # Deploy to these servers.
 servers:
   web:
-    - 54.169.73.2  # Thay bằng IP server của bạn
+    - 47.128.146.113  # Thay bằng IP server của bạn
   job:
     hosts:
-      - 54.169.73.2  # Sidekiq worker
+      - 47.128.146.113  # Sidekiq worker
     cmd: bundle exec sidekiq
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -32,7 +32,7 @@ registry:
 
   # Always use an access token rather than real password when possible.
   password:
-    - KAMAL_REGISTRY_PASSWORD  # GitHub Personal Access Token
+    - KAMAL_REGISTRY_PASSWORD  # GitHub Personal Access Token (từ .kamal/secrets hoặc GitHub Actions)
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
@@ -101,7 +101,7 @@ ssh:
 accessories:
   db:
     image: mysql:8.0
-    host: 54.169.73.2  # Thay bằng IP server của bạn
+    host: 47.128.146.113  # Thay bằng IP server của bạn
     port: "127.0.0.1:3306:3306"
     options:
       network: "kamal"  # Join kamal network để app có thể kết nối
@@ -115,7 +115,7 @@ accessories:
       - data:/var/lib/mysql
   redis:
     image: redis:7-alpine
-    host: 54.169.73.2  # Thay bằng IP server của bạn
+    host: 47.128.146.113  # Thay bằng IP server của bạn
     port: "127.0.0.1:6379:6379"
     options:
       network: "kamal"  # Join kamal network để app có thể kết nối
